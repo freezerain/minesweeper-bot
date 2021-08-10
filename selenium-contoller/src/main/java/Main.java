@@ -25,7 +25,7 @@ public class Main {
         driver.manage().window().setSize(new Dimension(1024, 800));
         Scanner in = new Scanner(System.in);
         System.out.println("Main init: " + (System.currentTimeMillis()-start) + "ms.");
-        SweeperSolver.startPlaying(driver, 3, 20, 5, 500);
+        SweeperSolver.startPlaying(driver, 1, 20, 100, 1);
         /*while(true){
             System.out.print("Difficulty(1-4) ?: ");
             int difficulty = in.nextInt();

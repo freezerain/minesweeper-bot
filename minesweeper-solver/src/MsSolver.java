@@ -109,17 +109,18 @@ public class MsSolver {
                         }
                     }
                     if (cell.mineCounter - flags == 0 && closedCells > 0 && lastCell!=null) {
-                        String move = lastCell.row + " " + lastCell.col + " lclick";
+                        String move = lastCell.row + " " + lastCell.col /*+ " lclick"*/;
                         if(!moveList.contains(move)) moveList.add(move);
                         
                     }
                     if (cell.mineCounter - flags == closedCells && closedCells > 0 && lastCell!=null) {
-                        String move = lastCell.row + " " + lastCell.col + " rclick";
-                        if(!moveList.contains(move)) moveList.add(move);
+                        //String move = lastCell.row + " " + lastCell.col + " rclick";
+                        //if(!moveList.contains(move)) moveList.add(move);
+                        cell.hasFlag = true;
                     }
                 } else if (field[row][col].isClosed && (!field[row][col].hasFlag) &&
                            nextMove.isEmpty()) {
-                    nextMove = row + " " + col + " lclick";
+                    nextMove = row + " " + col /*+ " lclick"*/;
                 }
             }
         }

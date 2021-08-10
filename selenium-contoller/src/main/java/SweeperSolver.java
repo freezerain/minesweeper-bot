@@ -3,8 +3,11 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.w3c.dom.Element;
 
+import javax.lang.model.util.Elements;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +75,13 @@ public class SweeperSolver {
         
         JavascriptExecutor js = (JavascriptExecutor) driver;
         int moves = 0;
-
+        long elementsTime = System.currentTimeMillis();
+        List<List<Object>> eleList= (List<List<Object>>)js.executeScript(JSLibrary.getElementsWithCoordinates());
+        RemoteWebElement[][] elementArr = new RemoteWebElement[rows][cols];
+        for (List<Object> e : eleList) {
+            elementArr[Integer.parseInt((String)e.get(1))][Integer.parseInt((String)e.get(0))] = (RemoteWebElement)e.get(2);
+        }
+        System.out.println("Element time:" + (System.currentTimeMillis() - elementsTime) + "ms.");
         js.executeScript(JSLibrary.createObserver());
         
         Cell[][] cellArr = new Cell[rows][cols];
@@ -85,6 +94,9 @@ public class SweeperSolver {
         String faceClass = faceButton.getAttribute("class");
         boolean[][] isVisited = new boolean[rows][cols];
         System.out.println("solve init: " + (System.currentTimeMillis()-start) + "ms.");
+        
+        js.executeScript(JSLibrary.getMultiClicker());
+        
         //Gaming loop
         while((!faceClass.contains("face-lose")) && (!faceClass.contains("face-win")) && moves<= maxMoves){
             start = System.currentTimeMillis();
@@ -111,26 +123,40 @@ public class SweeperSolver {
                 return false;
             }
             System.out.println(moveList);
-            long clickAvg = 0;
+            
+            int[] reversedMoveList = new int[moveList.size()*2];
+            for (int i = 0; i< moveList.size(); i+=2) {
+                String[] splitted = moveList.get(i).split(" ");
+                reversedMoveList[i] = Integer.parseInt(splitted[1]);
+                reversedMoveList[i+1] = Integer.parseInt(splitted[0]);
+            }
+            Timer jsClickTimer = new Timer("solver.JSClicks");
+            js.executeScript(JSLibrary.getMultiClick(reversedMoveList));
+            jsClickTimer.printTime();
+/*            long clickAvg = 0;
             for(String s : moveList) {
                 long clickStart = System.currentTimeMillis();
                 String[] nextMove = s.split(" ");
-                WebElement cellToAct = driver.findElement(
-                        By.id("cell_" + nextMove[1] + "_" + nextMove[0]));
-                if(nextMove[2].equals("lclick")) actionProvider.click(cellToAct).build().perform();
-                else actionProvider.contextClick(cellToAct).build().perform();
+                if(nextMove[2].equals("lclick")) actionProvider.click(elementArr[Integer.parseInt(nextMove[0])][Integer.parseInt(nextMove[1])]);
+                else actionProvider.contextClick(elementArr[Integer.parseInt(nextMove[0])][Integer.parseInt(nextMove[1])]);
                 clickAvg+= System.currentTimeMillis()-clickStart;
             }
             System.out.println("Click avg: " + (clickAvg/moveList.size()) + "ms.");
+            Timer timeCliclPerform = new Timer("solver.loop.Click.Performe");
+            actionProvider.build().perform();
+            timeCliclPerform.printTime();
             
+            */
+            
+            Timer timeRest = new Timer("solver.loop.end");
             faceClass = faceButton.getAttribute("class");
             maxMoves++;
             sleep(delay);
-            System.out.println("solve.rest: " + (System.currentTimeMillis()-start) + "ms.");
             start = System.currentTimeMillis();
+            timeRest.printTime();
         }
         System.out.println("solve.return: " + (System.currentTimeMillis()-start) + "ms.");
-        if(faceClass.contains("face-lose")) sleep(10000);
+        //if(faceClass.contains("face-lose")) sleep(10000);
         return faceClass.contains("face-win");
         
     }
