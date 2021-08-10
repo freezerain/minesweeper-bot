@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class MsSolver {
     public static String nextMove(int[][] field) {
         String nextMove = "";
@@ -77,6 +80,51 @@ public class MsSolver {
             }
         }
         return nextMove;
+    }
+
+    public static List<String> nextMoves(Cell[][] field) {
+        String nextMove = "";
+        List<String> moveList = new ArrayList<>();
+        for (int row = 0; row < field.length; row++){
+            for (int col = 0; col < field[row].length; col++){
+                if ((!field[row][col].isClosed) && field[row][col].mineCounter > 0) {
+                    Cell cell = field[row][col];
+                    int flags = 0;
+                    Cell lastCell = null;
+                    int closedCells = 0;
+                    for (int rowNeighbor = Math.max(0, row - 1);
+                         rowNeighbor < Math.min(field.length, row + 2); rowNeighbor++){
+                        for (int colNeighbor = Math.max(0, col - 1);
+                             colNeighbor < Math.min(field[rowNeighbor].length, col + 2);
+                             colNeighbor++){
+                            if ((!field[rowNeighbor][colNeighbor].isClosed)) continue;
+                            if (field[rowNeighbor][colNeighbor].hasFlag) {
+                                flags++;
+                                continue;
+                            }
+                            if (field[rowNeighbor][colNeighbor].isClosed) {
+                                lastCell = field[rowNeighbor][colNeighbor];
+                                closedCells++;
+                            }
+                        }
+                    }
+                    if (cell.mineCounter - flags == 0 && closedCells > 0 && lastCell!=null) {
+                        String move = lastCell.row + " " + lastCell.col + " lclick";
+                        if(!moveList.contains(move)) moveList.add(move);
+                        
+                    }
+                    if (cell.mineCounter - flags == closedCells && closedCells > 0 && lastCell!=null) {
+                        String move = lastCell.row + " " + lastCell.col + " rclick";
+                        if(!moveList.contains(move)) moveList.add(move);
+                    }
+                } else if (field[row][col].isClosed && (!field[row][col].hasFlag) &&
+                           nextMove.isEmpty()) {
+                    nextMove = row + " " + col + " lclick";
+                }
+            }
+        }
+        if(moveList.isEmpty()) moveList.add(nextMove);
+        return moveList;
     }
 
     public static void rClickAction(Cell[][] field, int row, int col) {

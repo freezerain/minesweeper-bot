@@ -12,6 +12,7 @@ import static java.lang.Thread.sleep;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
+        long start = System.currentTimeMillis();
         final String LOGIN = "freezerain";
         final String PASS = "@Sj5cySbQWTPP!C";
         System.setProperty("webdriver.chrome.driver",
@@ -23,7 +24,8 @@ public class Main {
         //driver.manage().window().minimize();
         driver.manage().window().setSize(new Dimension(1024, 800));
         Scanner in = new Scanner(System.in);
-        SweeperSolver.startPlaying(driver, 2, 5, 500, 10);
+        System.out.println("Main init: " + (System.currentTimeMillis()-start) + "ms.");
+        SweeperSolver.startPlaying(driver, 3, 20, 5, 500);
         /*while(true){
             System.out.print("Difficulty(1-4) ?: ");
             int difficulty = in.nextInt();
