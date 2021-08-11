@@ -1,44 +1,25 @@
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.interactions.Actions;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-
-import static java.lang.Thread.sleep;
+import org.openqa.selenium.remote.CapabilityType;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        long start = System.currentTimeMillis();
-        final String LOGIN = "freezerain";
-        final String PASS = "@Sj5cySbQWTPP!C";
+        /*final String LOGIN = "trapfreezerainitis";
+        final String PASS = "trap@Sj5cySbQWTPP!Citis";*/
         System.setProperty("webdriver.chrome.driver",
                            "D:\\Soft\\chromedriver_win32\\chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
         //options.addArguments("headless");*/
-        options.addArguments("--user-data-dir=D:\\Soft\\chromedriver_win32\\UserData");
+        //options.addArguments("--user-data-dir=D:\\Soft\\chromedriver_win32\\UserData");
+        options.addArguments("--ignore-certificate-errors");
+        Proxy proxy = new Proxy();
+        proxy.setHttpProxy("178.63.17.151:3128");
+        proxy.setSslProxy("178.63.17.151:3128");
+        options.setCapability(CapabilityType.PROXY, proxy);
         WebDriver driver = new ChromeDriver(options);
-        //driver.manage().window().minimize();
-        driver.manage().window().setSize(new Dimension(1024, 800));
-        Scanner in = new Scanner(System.in);
-        System.out.println("Main init: " + (System.currentTimeMillis()-start) + "ms.");
-        SweeperSolver.startPlaying(driver, 1, 20, 100, 1);
-        /*while(true){
-            System.out.print("Difficulty(1-4) ?: ");
-            int difficulty = in.nextInt();
-            in.nextLine();
-            System.out.println("Games to play?: ");
-            int games = in.nextInt();
-            in.nextLine();
-            SweeperSolver.startPlaying(driver, difficulty, games, 3000, 5);
-            System.out.println("Gaming session end. Enter /again/ or /quit/ :");
-            String isRepeat = in.nextLine();
-            if(isRepeat.equals("again")) continue;
-            else break;
-        }*/
+        driver.manage().window().setSize(new Dimension(1800, 800));
+        SweeperSolver.startPlaying(driver, 3, 20, 500, 200);
         driver.quit();
     }
 }
